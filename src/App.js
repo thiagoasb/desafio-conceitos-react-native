@@ -19,15 +19,18 @@ export default function App() {
     api.get('/repositories').then(response => {
       setRepositories(response.data);
     });
-  });
+  }, []);
 
   async function handleLikeRepository(id) {
-    const response = await api.post(`/repositories/${id}/like`);
+    //const response = await api.post(`/repositories/${id}/like`);
 
-    const indexRepository = await repositories
+    const indexRepository = repositories
       .findIndex((repository) => repository.id === id);
-    repositories[indexRepository].likes === response.data.likes;
-    setRepositories([...repositories]);
+
+    let newRepositories = [...repositories];
+    newRepositories[indexRepository] = {...newRepositories[indexRepository], 
+      likes: newRepositories[indexRepository].likes + 1};
+    await api.post(`/repositories/${id}/like`).then(() => setRepositories([... newRepositories]));
 
   }
 
